@@ -19,7 +19,7 @@ public class Main {
         // Die folgenden Werte werden jetzt aus Umgebungsvariablen gelesen
         String trelloApiKey = System.getenv("TRELLO_API_KEY");
         String trelloToken = System.getenv("TRELLO_TOKEN");
-        String trelloIdList = System.getenv("TRELLO_ID_LIST"); // Angenommen, dies ist auch ein Secret oder eine Konfigurations-ID
+        String trelloIdList = System.getenv("TRELLO_ID_LIST");
 
         String aroundHomeClientId = System.getenv("AROUND_HOME_CLIENT_ID");
         String aroundHomeClientSecret = System.getenv("AROUND_HOME_CLIENT_SECRET");
@@ -45,13 +45,12 @@ public class Main {
 
         if (connection.getResponseCode() != 200) {
             System.err.println("Fehler beim Abrufen der Leads von Around Home API um " + timestamp);
-            // Zusätzliche Fehlerdetails könnten hier hilfreich sein, z.B. conn.getResponseMessage()
             System.err.println("HTTP Response Code: " + connection.getResponseCode());
             System.exit(1);  // Fehlercode 1 für Bashskript
         }
 
         // Datenbankverbindung
-        String dbUrl = System.getenv("DB_URL"); // z.B. jdbc:mysql://localhost:3306/new_schema
+        String dbUrl = System.getenv("DB_URL");
         String dbUser = System.getenv("DB_USER");
         String dbPassword = System.getenv("DB_PASSWORD");
 
@@ -179,9 +178,9 @@ public class Main {
                 pstmt.setString(31, installationPhone);
                 pstmt.setString(32, installationMobile);
 
-                // Erfolgreich, in die Datenbank einfügen
+                // In die Datenbank einfügen
                 pstmt.executeUpdate();
-                pstmt.close(); // Wichtig: PreparedStatement schließen, um Ressourcen freizugeben
+                pstmt.close();
 
                 // POST-Anfrage an Trello senden
                 String trelloPostData = "{\"name\":\"" + leadId + "\",\"desc\":\"ID: " + leadId + "\\nGekauft am: " + bought + "\\nErreichbarkeit: " + reachability + "\\nTermin: " + appointment + "\\nNotizen: " + callingNotes + "\\nTermin vereinbart : " + appointmentSet + "\\nTerminnotizen : " + notes + "\\nTermin beginnt am : " + startsAt + "\\nTermin endet am : " + endsAt + "\\nTermin Adresse : " + address + "\\nTermin Postleitzahl : " + zip_code + "\\nTermin Stadt : " + city + "\\n\\nAngebot Kontakt Firma : " + company + "\\nAngebot Kontakt Anrede : " + salutation + "\\nAngebot Kontakt Vorname : " + offerContactFirstName + "\\nAngebot Kontakt Nachname : " + offerContactLastName + "\\nAngebot Kontakt Adresse : " + offerAddress + "\\nAngebot Kontakt Postleitzahl : " + zipCode + "\\nAngebot Kontakt Stadt : " + offerCity + "\\nAngebot Kontakt Email : " + email + "\\nAngebot Kontakt Telefon : " + phone + "\\nAngebot Kontakt Mobiltelefon : " + mobile + "\\n\\nInstallation Kontakt Firma : " + installationCompany + "\\nInstallation Kontakt Anrede : " + installationSalutation + "\\nInstallation Kontakt Vorname : " + installationFirstName + "\\nInstallation Kontakt Nachname : " + installationLastName + "\\nInstallation Kontakt Adresse : " + installationAddress + "\\nInstallation Kontakt Postleitzahl : " + installationZipCode + "\\nInstallation Kontakt Stadt : " + installationCity + "\\nInstallation Kontakt Email : " + installationEmail + "\\nInstallation Kontakt Telefon : " + installationPhone + "\\nInstallation Kontakt Mobil : " + installationMobile + "\\n\\nFragen und Antworten:\\n" + questions + "\",\"idList\":\"" + trelloIdList + "\"}";
@@ -202,15 +201,6 @@ public class Main {
                     if (conn2.getResponseCode() != 200) {
                         System.err.println("Fehler beim Senden an Trello für Lead " + leadId + " aufgetreten um " + timestamp);
                         System.err.println("HTTP Response Code: " + conn2.getResponseCode());
-                        // Optional: Response-Nachricht von Trello lesen, um mehr Details zu erhalten
-                        // try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(conn2.getErrorStream()))) {
-                        //     StringBuilder errorResponse = new StringBuilder();
-                        //     String errorLine;
-                        //     while ((errorLine = errorReader.readLine()) != null) {
-                        //         errorResponse.append(errorLine);
-                        //     }
-                        //     System.err.println("Trello Error Response: " + errorResponse.toString());
-                        // }
                         System.exit(1);  // Fehlercode 1 für Bashskript
                     } else {
                         System.out.println("Lead " + leadId + " erfolgreich in Datenbank eingefügt und an Trello gesendet.");
